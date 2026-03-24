@@ -1,0 +1,319 @@
+# 🧬 Word Counter Pro — PhD Text Analyser
+
+> **A full-featured desktop text analysis tool built in Python — and a conceptual bridge to bioinformatics pipeline development.**
+
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
+![Author](https://img.shields.io/badge/Author-Grace%20Mbuende-purple?style=flat-square)
+
+---
+
+## 📌 Overview
+
+**Word Counter Pro** is an advanced text analysis desktop application built with Python. It goes far beyond simple word counting — it performs NLP-style analysis including readability scoring, lexical diversity measurement, bigram extraction, and frequency distribution visualisation, all wrapped in a clean Tkinter GUI.
+
+This project was built as part of my Python learning journey and serves a dual purpose:
+
+1. **As a standalone tool** — useful for academic writers, researchers, and students who want deep insight into their documents.
+2. **As a conceptual prototype** — every core technique in this project has a direct parallel in bioinformatics pipeline development, as detailed in the [Bioinformatics Bridge](#-bioinformatics-bridge) section below.
+
+---
+
+## ✨ Features
+
+| Feature | Description |
+|---|---|
+| 📂 Multi-format file support | Reads `.txt`, `.pdf`, and `.docx` files |
+| 📊 Word frequency analysis | Top-N most frequent words with stopword removal |
+| 🔗 Bigram extraction | Identifies meaningful two-word phrases |
+| 📖 Readability scoring | Flesch-Kincaid score with reading level classification |
+| 🧠 Lexical diversity | Unique word ratio as a vocabulary richness metric |
+| 📝 Document statistics | Word count, sentence count, paragraph count, average lengths |
+| 📈 Visualisations | Bar chart and Zipf's Law frequency distribution (Matplotlib) |
+| 💾 CSV export | Structured export of word and bigram frequencies |
+| 🌐 HTML report | Styled, self-contained analysis report for sharing |
+| ⚡ Threaded analysis | Background processing keeps the GUI responsive |
+
+---
+
+## 🖥️ Screenshot
+
+```
+============================================================
+  ANALYSIS REPORT
+  File: research_paper.pdf
+============================================================
+
+── DOCUMENT STATISTICS ─────────────────────────────────
+  Total words         : 4,231
+  Unique words        : 1,847
+  Characters          : 24,609
+  Sentences           : 183
+  Paragraphs          : 42
+  Avg word length     : 5.82 letters
+  Avg sentence length : 23.1 words
+
+── READABILITY & LEXICAL ANALYSIS ──────────────────────
+  Flesch-Kincaid score: 38.4 / 100
+  Reading level       : Difficult (Academic)
+  Lexical diversity   : 43.67%
+
+── TOP WORDS ────────────────────────────────────────────
+  genomic              142  ████████████████████
+  population            98  ██████████████
+  variant               87  █████████████
+  ...
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/Tess8827/Python-word-counter.git
+cd Python-word-counter
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### requirements.txt
+
+```
+matplotlib
+pdfplumber
+python-docx
+```
+
+### Running the App
+
+```bash
+python word_counter_pro.py
+```
+
+---
+
+## 🧬 Bioinformatics Bridge
+
+This is the section that makes this project more than just a text tool.
+
+Every algorithmic pattern used here maps directly to a technique used in bioinformatics pipelines. This project was intentionally built with those parallels in mind, as part of my preparation for graduate-level computational biology work focused on **pharmacogenomics equity and precision medicine for underrepresented populations**.
+
+---
+
+### 1. File Parsing → Biological File Format Parsing
+
+**In this project:**
+The `extract_text()` function detects the file extension (`.txt`, `.pdf`, `.docx`) and applies the appropriate parser, handling errors gracefully when optional libraries are absent.
+
+```python
+def extract_text(file_path):
+    ext = os.path.splitext(file_path)[1].lower()
+    if ext == ".txt":
+        with open(file_path, "r", encoding="utf-8") as f:
+            return f.read()
+    elif ext == ".pdf":
+        ...
+    elif ext == ".docx":
+        ...
+```
+
+**In bioinformatics:**
+This is exactly how tools like **Biopython** parse biological sequence files. Different formats (`.fasta`, `.fastq`, `.vcf`, `.gff`, `.bam`) require different parsers, and robust pipelines detect and handle each format appropriately.
+
+```python
+# Bioinformatics equivalent using Biopython
+from Bio import SeqIO
+
+def parse_sequence_file(file_path, file_format):
+    records = list(SeqIO.parse(file_path, file_format))
+    return records
+# fasta, fastq, genbank — same pattern, different parsers
+```
+
+---
+
+### 2. Word Frequency Counter → Variant Frequency Analysis
+
+**In this project:**
+`Counter(filtered_words).most_common(n)` identifies the most frequently occurring meaningful words in a document — the signal above the noise.
+
+```python
+"top_words": Counter(filtered).most_common(n)
+```
+
+**In bioinformatics:**
+This is structurally identical to computing **allele or variant frequencies** across a population. In pharmacogenomics, knowing how often a particular variant in a drug-metabolism gene (e.g. CYP2D6, CYP2C19) appears in a given ancestry group is fundamental to dosing guidelines.
+
+```python
+# Bioinformatics equivalent
+from collections import Counter
+
+def variant_frequency(vcf_records, population_group):
+    variants = [r.ALT for r in vcf_records if r.INFO['POP'] == population_group]
+    return Counter(variants).most_common(20)
+```
+
+This is directly relevant to the pharmacogenomic equity problem — the same logic that counts words can count variants, and the same insight that some words are overrepresented applies to the fact that some populations are underrepresented in variant databases like gnomAD.
+
+---
+
+### 3. Stopword Filtering → Quality Filtering of Genomic Reads
+
+**In this project:**
+Common words ("the", "and", "is") are removed before analysis because they add noise without adding meaning. The signal-to-noise ratio improves dramatically.
+
+```python
+STOPWORDS = frozenset({"a", "an", "the", "and", ...})
+
+def extract_words(text, remove_stopwords=True):
+    words = re.findall(r"[A-Za-z]+", text.lower())
+    if remove_stopwords:
+        words = [w for w in words if w not in STOPWORDS and len(w) > 1]
+    return words
+```
+
+**In bioinformatics:**
+This is conceptually identical to **read quality filtering** in sequencing pipelines. Low-quality bases (Phred score < 20), adapter sequences, and short reads are removed before alignment — they are the genomic equivalent of stopwords. Tools like **Trimmomatic** and **fastp** implement exactly this logic.
+
+```bash
+# Bioinformatics equivalent — trimming low-quality reads
+trimmomatic PE input_R1.fastq input_R2.fastq \
+    output_R1.fastq /dev/null output_R2.fastq /dev/null \
+    LEADING:20 TRAILING:20 MINLEN:36
+```
+
+The principle is the same: remove the noise that is definitionally uninformative before doing meaningful analysis.
+
+---
+
+### 4. Bigram Analysis → K-mer Analysis
+
+**In this project:**
+Bigrams capture two-word co-occurrences that carry meaning a single word cannot — "machine learning", "gene expression", "precision medicine" are more informative than any single word alone.
+
+```python
+def extract_bigrams(words):
+    return [f"{words[i]} {words[i+1]}" for i in range(len(words) - 1)]
+```
+
+**In bioinformatics:**
+This is the **k-mer** principle. A k-mer is a subsequence of length k extracted from a biological sequence. K-mers are foundational to genome assembly (Velvet, SPAdes), read alignment, and taxonomic classification (Kraken2). A bigram is literally a 2-word k-mer.
+
+```python
+# Bioinformatics equivalent — k-mer extraction from a sequence
+def extract_kmers(sequence, k=21):
+    return [sequence[i:i+k] for i in range(len(sequence) - k + 1)]
+
+seq = "ATGCGTACGATCG"
+kmers = extract_kmers(seq, k=4)
+# ['ATGC', 'TGCG', 'GCGT', 'CGTA', ...]
+```
+
+The sliding window logic is identical. The insight — that overlapping subunits capture contextual relationships — is the same in language and in genomics.
+
+---
+
+### 5. HTML Report Export → Pipeline QC Reports
+
+**In this project:**
+`export_html()` generates a self-contained, styled report with summary statistics, a data table, and frequency bars — designed to communicate findings clearly to a reader who didn't run the analysis themselves.
+
+```python
+def export_html(results, output_path, filename=""):
+    # Generates styled HTML with CSS grid, stat cards, and bar chart table
+    ...
+```
+
+**In bioinformatics:**
+This maps directly to tools like **FastQC**, **MultiQC**, and **Qualimap**, which aggregate QC statistics from sequencing pipelines into HTML reports. The goal is identical — take raw computational output and render it as a human-readable document that a clinician, collaborator, or PI can interpret without running the code themselves.
+
+In production genomics pipelines, this reporting layer is often as important as the analysis itself. A result that cannot be communicated is a result that cannot be acted on — particularly relevant in clinical genomics settings and global health contexts.
+
+---
+
+### 6. Threaded UI → Parallel Processing of Genomic Data
+
+**In this project:**
+Analysis runs in a background thread so the GUI remains responsive. This is a fundamental principle of concurrent programming — separate the compute-heavy work from the interface layer.
+
+```python
+def _run_analysis(self):
+    self.status.config(text="Analysing...")
+    threading.Thread(target=self._do_analysis, daemon=True).start()
+```
+
+**In bioinformatics:**
+Genomic datasets are orders of magnitude larger than text documents. Whole-genome sequencing produces files of 50–200GB. Every serious bioinformatics tool uses parallelism — whether through Python's `multiprocessing`, workflow managers like **Snakemake** or **Nextflow**, or cluster job schedulers like **SLURM**.
+
+```python
+# Bioinformatics equivalent — parallel processing of samples
+from multiprocessing import Pool
+
+def analyse_sample(sample_path):
+    # variant calling, QC, alignment...
+    pass
+
+with Pool(processes=8) as pool:
+    results = pool.map(analyse_sample, sample_paths)
+```
+
+The threading instinct — don't block the main process while heavy computation runs — scales from a desktop GUI to a 1000-sample genomics pipeline.
+
+---
+
+## 📐 Summary Table
+
+| This Project | Bioinformatics Equivalent | Key Tool/Concept |
+|---|---|---|
+| `.txt`/`.pdf`/`.docx` parsing | FASTA/VCF/GFF/BAM parsing | Biopython, pysam |
+| Word frequency (Counter) | Variant/allele frequency | VCF tools, pandas |
+| Stopword filtering | Read quality filtering | Trimmomatic, fastp |
+| Bigram extraction | K-mer analysis | SPAdes, Kraken2 |
+| HTML report export | Pipeline QC reporting | MultiQC, FastQC |
+| Background threading | Parallel sample processing | Snakemake, Nextflow, SLURM |
+
+---
+
+## 🔭 What Comes Next
+
+This project is a foundation. The next stage of development — under the umbrella of **Mbuende Biointelligence** — applies these same computational patterns to:
+
+- Parsing pharmacogenomic variant data (PharmGKB, gnomAD)
+- Analysing CYP450 variant frequencies across African, South Asian, and other underrepresented ancestry groups
+- Building population-aware drug metabolism reports
+- Connecting genomic data to environmental and cold-chain variables for precision medicine in low- and middle-income country (LMIC) settings
+
+The tools being built here serve a mission: **making precision medicine precise for everyone, not just populations that have historically dominated genomic databases.**
+
+---
+
+## 👩🏾‍💻 About the Author
+
+**Grace Mbuende**
+BSc Biomedical Sciences (Genomics), Northumbria University
+Founder, **Mbuende Biointelligence** — Northumbria University Incubation Hub
+
+Passionate about computational genomics, pharmacogenomic equity, and building tools that serve underrepresented populations in precision medicine.
+
+- 🐙 GitHub: [@Tess8827](https://github.com/Tess8827)
+- 🏢 Company: Mbuende Biointelligence
+
+---
+
+## 📄 Licence
+
+This project is licensed under the MIT Licence. See [LICENSE](LICENSE) for details.
+
+---
+
+*Built with Python. Grounded in biology. Driven by equity.*
